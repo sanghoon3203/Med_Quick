@@ -1,8 +1,8 @@
 package com.example.quick_med
 
-
-import MedicineAdapter
+import android.content.Intent
 import android.os.Bundle
+import android.widget.AdapterView
 import android.widget.ListView
 import android.widget.SearchView
 import androidx.appcompat.app.AppCompatActivity
@@ -11,7 +11,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 import kotlin.concurrent.thread
 import android.widget.Toast
-import com.example.quick_med.Medicine
+import com.example.quick_med.MedicineAdapter
 
 class Search_Med : AppCompatActivity() {
 
@@ -28,6 +28,7 @@ class Search_Med : AppCompatActivity() {
                 connection.requestMethod = "GET"
 
                 val response = connection.inputStream.bufferedReader().use { it.readText() }
+                // 로그 추가
                 println("API Response: $response")
 
                 val jsonObject = JSONObject(response)
@@ -39,8 +40,10 @@ class Search_Med : AppCompatActivity() {
                     val item = items.getJSONObject(i)
                     val name = item.getString("itemName")
                     val description = item.getString("efcyQesitm")
-                    val imageUrl = if (item.has("itemImage") && !item.isNull("itemImage")) item.getString("itemImage") else null
-                    medicines.add(Medicine(name, description, imageUrl))
+                    val imageUrl = item.optString("itemImage", null)
+                    val dosage = item.optString("useMethodQesitm", "정보 없음")
+                    val sideEffects = item.optString("seQesitm", "정보 없음")
+                    medicines.add(Medicine(name, description, imageUrl, dosage, sideEffects))
                 }
 
                 runOnUiThread {
@@ -49,6 +52,17 @@ class Search_Med : AppCompatActivity() {
                     } else {
                         Toast.makeText(this@Search_Med, "검색 결과가 없습니다.", Toast.LENGTH_SHORT).show()
                     }
+                }
+
+                listView.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                    val selectedMedicine = medicines[position]
+                    val intent = Intent(this@Search_Med, Info_Med::class.java).apply {
+                        putExtra("imageUrl", selectedMedicine.imageUrl)
+                        putExtra("effect", selectedMedicine.description)
+                        putExtra("dosage", selectedMedicine.dosage)
+                        putExtra("sideEffects", selectedMedicine.sideEffects)
+                    }
+                    startActivity(intent)
                 }
 
             } catch (e: Exception) {
