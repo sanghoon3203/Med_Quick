@@ -1,13 +1,12 @@
 package com.example.quick_med
 
-import android.app.AlarmManager
-import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.widget.*
+import android.widget.ArrayAdapter
+import android.widget.Button
+import android.widget.ListView
 import androidx.appcompat.app.AppCompatActivity
-import java.util.*
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,6 +36,13 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, Search_Med::class.java)
             startActivity(intent)
         }
+
+        // Load saved medicine names and display them in the ListView
+        val medicineListView = findViewById<ListView>(R.id.medicineListView)
+        val sharedPreferences = getSharedPreferences("saved_medicines", Context.MODE_PRIVATE)
+        val savedMedicines = sharedPreferences.getStringSet("medicines", HashSet()) ?: HashSet()
+
+        val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, savedMedicines.toList())
+        medicineListView.adapter = adapter
     }
 }
-

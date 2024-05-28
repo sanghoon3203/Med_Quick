@@ -47,4 +47,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button_my_med" />
 
+    <!-- ListView to display saved medicine names -->
+    <ListView
+        android:id="@+id/medicineListView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/button_search_med"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:padding="16dp">
+    </ListView>
 </androidx.constraintlayout.widget.ConstraintLayout>

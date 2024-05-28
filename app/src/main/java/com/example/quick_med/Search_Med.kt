@@ -11,7 +11,6 @@ import java.net.HttpURLConnection
 import java.net.URL
 import kotlin.concurrent.thread
 import android.widget.Toast
-import com.example.quick_med.MedicineAdapter
 
 class Search_Med : AppCompatActivity() {
 
@@ -57,6 +56,7 @@ class Search_Med : AppCompatActivity() {
                 listView.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
                     val selectedMedicine = medicines[position]
                     val intent = Intent(this@Search_Med, Info_Med::class.java).apply {
+                        putExtra("name", selectedMedicine.name)
                         putExtra("imageUrl", selectedMedicine.imageUrl)
                         putExtra("effect", selectedMedicine.description)
                         putExtra("dosage", selectedMedicine.dosage)

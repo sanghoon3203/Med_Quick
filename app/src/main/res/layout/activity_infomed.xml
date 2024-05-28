@@ -3,7 +3,7 @@
     android:layout_height="match_parent"
     android:padding="16dp">
 
-    <!-- 약 이름을 표시하는 텍스트뷰 -->
+    <!-- 약 이름 표시 -->
     <TextView
         android:id="@+id/medicineName"
         android:layout_width="wrap_content"
@@ -12,15 +12,16 @@
         android:layout_centerHorizontal="true"
         android:textSize="24sp"
         android:textStyle="bold"
-        android:text="약 이름"
-        android:layout_marginTop="16dp"
-        android:paddingBottom="16dp"/>
+        android:text="약 이름" /> <!-- 약 이름은 코드에서 설정 -->
 
+    <!-- ScrollView for content -->
     <ScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:layout_below="@id/medicineName"
-        android:layout_above="@id/buttonLayout">
+        android:layout_above="@id/buttonLayout"
+        android:layout_weight="1">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -32,7 +33,6 @@
                 android:id="@+id/medicineImage"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
-                android:layout_alignParentTop="true"
                 android:layout_marginTop="16dp"
                 android:contentDescription="@string/medicine_image"
                 android:scaleType="centerCrop"
@@ -42,7 +42,7 @@
                 android:id="@+id/medicineInfoSection"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="50dp"
+                android:layout_marginTop="16dp"
                 android:orientation="vertical"
                 android:padding="8dp">
 
@@ -52,7 +52,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="@string/effect_info" />
+                    android:text="@string/effect_info"
+                    android:textColor="#000000"
+                    android:textSize="16sp" />
 
                 <TextView
                     android:id="@+id/Api_effectInfo"
@@ -73,7 +75,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="@string/dosage_info" />
+                    android:text="@string/dosage_info"
+                    android:textColor="#000000"
+                    android:textSize="16sp" />
 
                 <TextView
                     android:id="@+id/Api_dosageInfo"
@@ -94,7 +98,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="@string/side_effects_info" />
+                    android:text="@string/side_effects_info"
+                    android:textColor="#000000"
+                    android:textSize="16sp" />
 
                 <TextView
                     android:id="@+id/Api_sideEffectsInfo"
@@ -112,35 +118,45 @@
         </LinearLayout>
     </ScrollView>
 
+    <!-- Button layout -->
     <LinearLayout
         android:id="@+id/buttonLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:gravity="center_horizontal">
 
-        <Button
-            android:id="@+id/yesButton"
+        <TextView
+            android:id="@+id/textView2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="25dp"
-            android:text="@string/yes" />
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="16dp"
+            android:text="MY약에 추가"
+            android:textColor="#000000"
+            android:textSize="16sp" />
 
-        <Button
-            android:id="@+id/noButton"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="25dp"
-            android:text="@string/no" />
+            android:orientation="horizontal"
+            android:gravity="center_horizontal">
+
+            <Button
+                android:id="@+id/yesButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="25dp"
+                android:text="@string/yes" />
+
+            <Button
+                android:id="@+id/noButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="25dp"
+                android:text="@string/no" />
+        </LinearLayout>
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_above="@id/buttonLayout"
-        android:layout_marginBottom="16dp"
-        android:text="MY약에 추가" />
 </RelativeLayout>
