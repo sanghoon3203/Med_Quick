@@ -1,14 +1,22 @@
 package com.example.quick_med
 
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.ListView
+import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
+    private lateinit var adapter: ArrayAdapter<String>
+    private lateinit var savedMedicines: MutableSet<String>
+    private lateinit var placeholder: TextView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -37,12 +45,75 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        // Load saved medicine names and display them in the ListView
-        val medicineListView = findViewById<ListView>(R.id.medicineListView)
-        val sharedPreferences = getSharedPreferences("saved_medicines", Context.MODE_PRIVATE)
-        val savedMedicines = sharedPreferences.getStringSet("medicines", HashSet()) ?: HashSet()
+        placeholder = findViewById(R.id.placeholder)
 
-        val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, savedMedicines.toList())
+        // Initialize ListView and Adapter
+        val medicineListView = findViewById<ListView>(R.id.medicineListView)
+        adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, mutableListOf())
         medicineListView.adapter = adapter
+
+        // Load data when the activity is created
+        loadSavedMedicines()
+
+        medicineListView.setOnItemClickListener { parent, view, position, id ->
+            val medicine = parent.getItemAtPosition(position) as String
+            showDeleteConfirmationDialog(medicine, position)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Reload data when the activity is resumed
+        loadSavedMedicines()
+    }
+
+    private fun loadSavedMedicines() {
+        val sharedPreferences = getSharedPreferences("saved_medicines", Context.MODE_PRIVATE)
+        savedMedicines = sharedPreferences.getStringSet("medicines", mutableSetOf()) ?: mutableSetOf()
+
+        // Clear and repopulate the adapter
+        adapter.clear()
+        adapter.addAll(savedMedicines)
+        adapter.notifyDataSetChanged()
+
+        // Show placeholder if the list is empty
+        updatePlaceholderVisibility()
+    }
+
+    private fun showDeleteConfirmationDialog(medicine: String, position: Int) {
+        val dialogBuilder = AlertDialog.Builder(this)
+        dialogBuilder.setMessage("약 $medicine 을(를) 삭제하시겠습니까?")
+            .setCancelable(false)
+            .setPositiveButton("예") { dialog, id -> deleteMedicine(medicine, position) }
+            .setNegativeButton("아니요") { dialog, id -> dialog.cancel() }
+        val alert = dialogBuilder.create()
+        alert.setTitle("약 삭제")
+        alert.show()
+    }
+
+    private fun deleteMedicine(medicine: String, position: Int) {
+        savedMedicines.remove(medicine)
+        getSharedPreferences("saved_medicines", Context.MODE_PRIVATE)
+            .edit()
+            .putStringSet("medicines", savedMedicines)
+            .apply()
+
+        // Remove the item from the adapter
+        adapter.remove(adapter.getItem(position))
+        adapter.notifyDataSetChanged()
+
+        // Show a toast message confirming the deletion
+        Toast.makeText(this, "삭제 되었습니다.", Toast.LENGTH_SHORT).show()
+
+        // Update placeholder visibility
+        updatePlaceholderVisibility()
+    }
+
+    private fun updatePlaceholderVisibility() {
+        if (adapter.isEmpty) {
+            placeholder.visibility = TextView.VISIBLE
+        } else {
+            placeholder.visibility = TextView.GONE
+        }
     }
 }
