@@ -4,6 +4,6 @@ data class Medicine(
     val name: String,
     val description: String,
     val imageUrl: String?,
-    val dosage: String,
-    val sideEffects: String
+    val dosage: String?,
+    val sideEffects: String?
 )

@@ -38,9 +38,9 @@ class Info_Med : AppCompatActivity() {
             medicineImage.setImageResource(R.drawable.placeholder_image)
         }
 
-        effectInfo.text = effect
-        dosageInfo.text = dosage
-        sideEffectsInfo.text = sideEffects
+        effectInfo.text = if (effect.isNullOrEmpty() || effect == "null") "효과 정보가 없습니다." else effect
+        dosageInfo.text = if (dosage.isNullOrEmpty() || dosage == "null") "복용 방법 정보가 없습니다." else dosage
+        sideEffectsInfo.text = if (sideEffects.isNullOrEmpty() || sideEffects == "null") "부작용 정보가 없습니다." else sideEffects
 
         // Button click listeners
         yesButton.setOnClickListener {
