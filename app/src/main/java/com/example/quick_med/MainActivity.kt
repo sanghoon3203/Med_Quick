@@ -1,5 +1,12 @@
 package com.example.quick_med
 
+<<<<<<< Updated upstream
+=======
+import SetAlarmActivity
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.Context
+>>>>>>> Stashed changes
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
@@ -12,7 +19,7 @@ class MainActivity : AppCompatActivity() {
 
         val buttonAlarm = findViewById<Button>(R.id.button_alarm)
         buttonAlarm.setOnClickListener {
-            val intent = Intent(this, Alarm::class.java)
+            val intent = Intent(this, SetAlarmActivity::class.java)
             startActivity(intent)
         }
 
