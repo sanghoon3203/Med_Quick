@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.example.quick_med">
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
 
     <application
         android:allowBackup="true"
@@ -12,11 +19,22 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:targetApi="31">
+
+        <activity
+            android:name=".Search_Med"
+            android:exported="false"
+            android:theme="@style/AppTheme" />
+
+        <activity
+            android:name=".SideEffect"
+            android:exported="false" />
+
         <activity
             android:name=".Intro2"
             android:exported="false"
             android:label="@string/title_activity_intro2"
             android:theme="@style/AppTheme" />
+
         <activity
             android:name=".Intro"
             android:exported="true"
@@ -27,35 +45,32 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
-            android:name=".SearchMed"
+            android:name=".InfoMed"
             android:theme="@style/AppTheme" />
+
         <activity
             android:name=".My_Med"
             android:theme="@style/AppTheme" />
+
         <activity
-            android:name=".SetAlarmActivity"
+            android:name=".SetAlarm"
             android:theme="@style/AppTheme" />
 
         <activity
             android:name=".Calendar"
             android:theme="@style/AppTheme" />
+
         <activity
             android:name=".Alarm"
             android:theme="@style/AppTheme" />
-<<<<<<< Updated upstream
-=======
 
 
->>>>>>> Stashed changes
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-<<<<<<< Updated upstream
-            android:theme="@style/AppTheme">
-        </activity>
-=======
             android:theme="@style/AppTheme" />
 
         <receiver
@@ -68,7 +83,12 @@
             </intent-filter>
         </receiver>
 
->>>>>>> Stashed changes
+        <receiver android:name=".BootReceiver" android:enabled="true" android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

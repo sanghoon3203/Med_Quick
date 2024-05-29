@@ -1,15 +1,9 @@
 package com.example.quick_med
 
-<<<<<<< Updated upstream
-=======
-import SetAlarmActivity
-import android.app.AlarmManager
-import android.app.PendingIntent
-import android.content.Context
->>>>>>> Stashed changes
+import com.example.quick_med.SetAlarm
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
@@ -19,7 +13,7 @@ class MainActivity : AppCompatActivity() {
 
         val buttonAlarm = findViewById<Button>(R.id.button_alarm)
         buttonAlarm.setOnClickListener {
-            val intent = Intent(this, SetAlarmActivity::class.java)
+            val intent = Intent(this, SetAlarm::class.java)
             startActivity(intent)
         }
 
@@ -37,8 +31,9 @@ class MainActivity : AppCompatActivity() {
 
         val buttonSearchMed = findViewById<Button>(R.id.button_search_med)
         buttonSearchMed.setOnClickListener {
-            val intent = Intent(this, SearchMed::class.java)
+            val intent = Intent(this, Search_Med::class.java)
             startActivity(intent)
         }
     }
 }
+

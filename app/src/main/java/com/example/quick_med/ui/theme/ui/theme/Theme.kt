@@ -1,4 +1,4 @@
-package com.example.quick_med.ui.theme
+package com.example.quick_med.ui.theme.ui.theme
 
 import android.app.Activity
 import android.os.Build
