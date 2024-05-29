@@ -55,7 +55,7 @@
             android:theme="@style/AppTheme" />
 
         <activity
-            android:name=".SetAlarm"
+            android:name=".SetAlarm_Add"
             android:theme="@style/AppTheme" />
 
         <activity

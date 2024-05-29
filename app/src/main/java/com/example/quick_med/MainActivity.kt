@@ -1,6 +1,5 @@
 package com.example.quick_med
 
-import com.example.quick_med.SetAlarm
 import android.content.Intent
 import android.os.Bundle
 import android.widget.*
@@ -13,7 +12,7 @@ class MainActivity : AppCompatActivity() {
 
         val buttonAlarm = findViewById<Button>(R.id.button_alarm)
         buttonAlarm.setOnClickListener {
-            val intent = Intent(this, SetAlarm::class.java)
+            val intent = Intent(this, SetAlarm_Add::class.java)
             startActivity(intent)
         }
 

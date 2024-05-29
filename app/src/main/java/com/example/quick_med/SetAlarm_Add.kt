@@ -1,0 +1,158 @@
+package com.example.quick_med
+
+import android.app.Activity
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
+import android.os.Bundle
+import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
+import java.util.Calendar
+
+class SetAlarm_Add : AppCompatActivity() {
+
+    private lateinit var spinnerAmPm: Spinner
+    private lateinit var numberPickerHour: NumberPicker
+    private lateinit var numberPickerMinute: NumberPicker
+    private lateinit var editTextAlarmName: EditText
+    private lateinit var dayCheckBoxes: Array<CheckBox>
+    private lateinit var textViewCurrentAlarm: TextView
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_set_alarm_2)
+
+        // 뷰 초기화
+        spinnerAmPm = findViewById(R.id.spinner_am_pm)
+        numberPickerHour = findViewById(R.id.numberPicker_hour)
+        numberPickerMinute = findViewById(R.id.numberPicker_minute)
+        editTextAlarmName = findViewById(R.id.editText_alarm_name)
+        textViewCurrentAlarm = findViewById(R.id.textView_current_alarm)
+
+        dayCheckBoxes = arrayOf(
+            findViewById(R.id.checkBox_sunday),
+            findViewById(R.id.checkBox_monday),
+            findViewById(R.id.checkBox_tuesday),
+            findViewById(R.id.checkBox_wednesday),
+            findViewById(R.id.checkBox_thursday),
+            findViewById(R.id.checkBox_friday),
+            findViewById(R.id.checkBox_saturday)
+        )
+
+        // NumberPicker 범위 설정
+        numberPickerHour.minValue = 1
+        numberPickerHour.maxValue = 12
+        numberPickerMinute.minValue = 0
+        numberPickerMinute.maxValue = 59
+
+        val buttonCreateAlarm: Button = findViewById(R.id.button_create_alarm)
+        val buttonCancelAlarm: Button = findViewById(R.id.button_cancel_alarm)
+        val buttonDeleteAlarm: Button = findViewById(R.id.button_delete_alarm)
+
+        buttonCreateAlarm.setOnClickListener { setAlarm() }
+        buttonCancelAlarm.setOnClickListener { finish() }
+        buttonDeleteAlarm.setOnClickListener { deleteAlarm() }
+
+        displayCurrentAlarm()
+    }
+
+    private fun setAlarm() {
+        val amPm = spinnerAmPm.selectedItemPosition // 0은 AM, 1은 PM
+        var hour = numberPickerHour.value
+        val minute = numberPickerMinute.value
+        val alarmName = editTextAlarmName.text.toString()
+
+        // 24시간 형식으로 변환
+        if (amPm == 1 && hour != 12) {
+            hour += 12
+        } else if (amPm == 0 && hour == 12) {
+            hour = 0
+        }
+
+        // 선택된 시간으로 캘린더 설정
+        val calendar = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, hour)
+            set(Calendar.MINUTE, minute)
+            set(Calendar.SECOND, 0)
+        }
+
+        // 선택된 요일 확인
+        val repeatDays = BooleanArray(7)
+        for (i in dayCheckBoxes.indices) {
+            repeatDays[i] = dayCheckBoxes[i].isChecked
+        }
+
+        // 알람 데이터를 SharedPreferences에 저장
+        val sharedPreferences = getSharedPreferences("AlarmPreferences", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putString("ALARM_NAME", alarmName)
+        editor.putInt("ALARM_HOUR", hour)
+        editor.putInt("ALARM_MINUTE", minute)
+        for (i in 0 until 7) {
+            editor.putBoolean("ALARM_REPEAT_$i", repeatDays[i])
+        }
+        editor.apply()
+
+        // 알람 설정
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(this, AlarmReceiver::class.java).apply {
+            putExtra("ALARM_NAME", alarmName)
+        }
+        val pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+
+        if (repeatDays[calendar.get(Calendar.DAY_OF_WEEK) - 1]) {
+            alarmManager.setRepeating(
+                AlarmManager.RTC_WAKEUP, calendar.timeInMillis,
+                AlarmManager.INTERVAL_DAY * 7, pendingIntent
+            )
+        } else {
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
+        }
+
+        Toast.makeText(this, "알람이 설정되었습니다", Toast.LENGTH_SHORT).show()
+
+        // 설정한 알람 데이터를 인텐트에 추가하여 반환
+        val resultIntent = Intent().apply {
+            putExtra("ALARM_NAME", alarmName)
+            putExtra("ALARM_HOUR", hour)
+            putExtra("ALARM_MINUTE", minute)
+        }
+        setResult(Activity.RESULT_OK, resultIntent)
+        finish()
+    }
+
+    private fun deleteAlarm() {
+        // 알람 삭제
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(this, AlarmReceiver::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+        alarmManager.cancel(pendingIntent)
+
+        // SharedPreferences에서 알람 데이터 삭제
+        val sharedPreferences = getSharedPreferences("AlarmPreferences", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.clear()
+        editor.apply()
+
+        Toast.makeText(this, "알람이 삭제되었습니다", Toast.LENGTH_SHORT).show()
+        displayCurrentAlarm()
+    }
+
+    private fun displayCurrentAlarm() {
+        // SharedPreferences에서 알람 데이터를 읽어옵니다.
+        val sharedPreferences = getSharedPreferences("AlarmPreferences", Context.MODE_PRIVATE)
+        val alarmName = sharedPreferences.getString("ALARM_NAME", null)
+        val hour = sharedPreferences.getInt("ALARM_HOUR", -1)
+        val minute = sharedPreferences.getInt("ALARM_MINUTE", -1)
+
+        if (alarmName != null && hour != -1 && minute != -1) {
+            val amPm = if (hour >= 12) "PM" else "AM"
+            val displayHour = if (hour > 12) hour - 12 else if (hour == 0) 12 else hour
+            val displayMinute = String.format("%02d", minute)
+            textViewCurrentAlarm.text = "현재 설정된 알람: $alarmName - $amPm $displayHour:$displayMinute"
+        } else {
+            textViewCurrentAlarm.text = "현재 설정된 알람 없음"
+        }
+    }
+}
