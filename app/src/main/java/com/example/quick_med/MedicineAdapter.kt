@@ -35,8 +35,13 @@ class MedicineAdapter(private val context: Context, private val dataSource: List
         nameTextView.text = medicine.name
         descriptionTextView.text = medicine.description
 
-        if (medicine.imageUrl != null) {
-            Picasso.get().load(medicine.imageUrl).placeholder(R.drawable.placeholder_image).into(imageView)
+        if (medicine.imageUrl != null && medicine.imageUrl.isNotEmpty()) {
+            try {
+                Picasso.get().load(medicine.imageUrl).placeholder(R.drawable.placeholder_image).into(imageView)
+            } catch (e: Exception) {
+                imageView.setImageResource(R.drawable.placeholder_image)
+                e.printStackTrace()
+            }
         } else {
             imageView.setImageResource(R.drawable.placeholder_image)
         }
@@ -44,3 +49,4 @@ class MedicineAdapter(private val context: Context, private val dataSource: List
         return rowView
     }
 }
+

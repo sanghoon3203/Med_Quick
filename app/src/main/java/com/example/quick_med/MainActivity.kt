@@ -14,8 +14,8 @@ import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
     private lateinit var adapter: ArrayAdapter<String>
-    private lateinit var savedMedicines: MutableSet<String>
     private lateinit var placeholder: TextView
+    private lateinit var medicineDAO: MedicineDAO
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,12 +52,15 @@ class MainActivity : AppCompatActivity() {
         adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, mutableListOf())
         medicineListView.adapter = adapter
 
+        // Initialize MedicineDAO
+        medicineDAO = MedicineDAO(this)
+
         // Load data when the activity is created
         loadSavedMedicines()
 
         medicineListView.setOnItemClickListener { parent, view, position, id ->
-            val medicine = parent.getItemAtPosition(position) as String
-            showDeleteConfirmationDialog(medicine, position)
+            val medicineName = parent.getItemAtPosition(position) as String
+            showDeleteConfirmationDialog(medicineName, position)
         }
     }
 
@@ -68,35 +71,30 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun loadSavedMedicines() {
-        val sharedPreferences = getSharedPreferences("saved_medicines", Context.MODE_PRIVATE)
-        savedMedicines = sharedPreferences.getStringSet("medicines", mutableSetOf()) ?: mutableSetOf()
+        val medicines = medicineDAO.getAllMedicines().map { it.name }
 
         // Clear and repopulate the adapter
         adapter.clear()
-        adapter.addAll(savedMedicines)
+        adapter.addAll(medicines)
         adapter.notifyDataSetChanged()
 
         // Show placeholder if the list is empty
         updatePlaceholderVisibility()
     }
 
-    private fun showDeleteConfirmationDialog(medicine: String, position: Int) {
+    private fun showDeleteConfirmationDialog(medicineName: String, position: Int) {
         val dialogBuilder = AlertDialog.Builder(this)
-        dialogBuilder.setMessage("약 $medicine 을(를) 삭제하시겠습니까?")
+        dialogBuilder.setMessage("약 $medicineName 을(를) 삭제하시겠습니까?")
             .setCancelable(false)
-            .setPositiveButton("예") { dialog, id -> deleteMedicine(medicine, position) }
+            .setPositiveButton("예") { dialog, id -> deleteMedicine(medicineName, position) }
             .setNegativeButton("아니요") { dialog, id -> dialog.cancel() }
         val alert = dialogBuilder.create()
         alert.setTitle("약 삭제")
         alert.show()
     }
 
-    private fun deleteMedicine(medicine: String, position: Int) {
-        savedMedicines.remove(medicine)
-        getSharedPreferences("saved_medicines", Context.MODE_PRIVATE)
-            .edit()
-            .putStringSet("medicines", savedMedicines)
-            .apply()
+    private fun deleteMedicine(medicineName: String, position: Int) {
+        medicineDAO.deleteMedicineByName(medicineName)
 
         // Remove the item from the adapter
         adapter.remove(adapter.getItem(position))
