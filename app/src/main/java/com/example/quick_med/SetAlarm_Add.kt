@@ -5,7 +5,10 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import java.util.Calendar
@@ -22,6 +25,9 @@ class SetAlarm_Add : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_set_alarm_2)
+
+        // 정확한 알람 권한 요청
+        requestExactAlarmPermission()
 
         // 뷰 초기화
         spinnerAmPm = findViewById(R.id.spinner_am_pm)
@@ -121,7 +127,15 @@ class SetAlarm_Add : AppCompatActivity() {
         setResult(Activity.RESULT_OK, resultIntent)
         finish()
     }
-
+    private fun requestExactAlarmPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            if (!alarmManager.canScheduleExactAlarms()) {
+                val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM, Uri.parse("package:$packageName"))
+                startActivity(intent)
+            }
+        }
+    }
     private fun deleteAlarm() {
         // 알람 삭제
         val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager

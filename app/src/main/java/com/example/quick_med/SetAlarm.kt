@@ -1,5 +1,6 @@
 package com.example.quick_med
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
@@ -15,8 +16,8 @@ import java.util.Calendar
 import java.util.Locale
 
 class SetAlarm : AppCompatActivity() {
-    private companion object{
-        const val REQUEST_CODE = 1
+    private companion object {
+        const val REQUEST_CODE = 1 // 요청 코드 정의
     }
 
     private lateinit var alarmListLayout: LinearLayout
@@ -26,14 +27,14 @@ class SetAlarm : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_set_alarm_0)
 
+        // 시스템 바 패딩 설정
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
-        // 오늘 날짜를 표시해줌.feat GPT
-        setContentView(R.layout.activity_set_alarm_0)
+        // 오늘 날짜를 표시해줌
         val dateTextView: TextView = findViewById(R.id.dateTextView)
         val calendar = Calendar.getInstance()
         val dateFormat = SimpleDateFormat("M월 d일 E요일", Locale.KOREAN)
@@ -41,11 +42,12 @@ class SetAlarm : AppCompatActivity() {
         dateTextView.text = dateString
 
         alarmListLayout = findViewById(R.id.alarmListLayout)
-        //알람 설정 화면으로 이동하는 버튼
+
+        // 알람 설정 화면으로 이동하는 버튼
         val button: Button = findViewById(R.id.addbutton)
         button.setOnClickListener {
             val intent = Intent(this, SetAlarm_Add::class.java)
-            startActivityForResult(intent, REQUEST_CODE)
+            startActivityForResult(intent, REQUEST_CODE) // 알람 설정 화면으로 이동
         }
     }
 
@@ -57,11 +59,12 @@ class SetAlarm : AppCompatActivity() {
             val minute = data?.getIntExtra("ALARM_MINUTE", -1)
             if (label != null && hour != -1 && minute != -1) {
                 val time = String.format("%02d:%02d", hour, minute)
-                addAlarmToList(label, time)
+                addAlarmToList(label, time) // 알람 목록에 추가
             }
         }
     }
 
+    @SuppressLint("MissingInflatedId")
     private fun addAlarmToList(label: String, time: String) {
         val alarmView = layoutInflater.inflate(R.layout.alarm_item, alarmListLayout, false)
         val alarmLabelTextView = alarmView.findViewById<TextView>(R.id.alarmLabelTextView)
@@ -70,5 +73,6 @@ class SetAlarm : AppCompatActivity() {
         alarmLabelTextView.text = label
         alarmTimeTextView.text = time
 
-        alarmListLayout.addView(alarmView, 0)
-    }}
+        alarmListLayout.addView(alarmView, 0) // 알람 목록에 뷰 추가
+    }
+}
