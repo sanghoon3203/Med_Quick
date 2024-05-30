@@ -1,8 +1,8 @@
 package com.example.quick_med
 
 data class AlarmData(
-    val name: String,
-    val hour: Int,
-    val minute: Int,
+    var name: String,
+    var hour: Int,
+    var minute: Int,
     val repeatDays: BooleanArray
 )
